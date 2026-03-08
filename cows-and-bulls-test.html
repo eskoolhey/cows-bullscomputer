@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cows & Bulls</title>
+  <style>
+    :root {
+      --bg1: #fff7fb;
+      --bg2: #ffe4f1;
+      --bg3: #ffd1e6;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: rgba(255, 255, 255, 0.9);
+      --text: #5f2146;
+      --muted: #9a5e80;
+      --accent: #ff4fa0;
+      --accent-2: #ff85bc;
+      --accent-3: #ffc2dd;
+      --success: #d9468d;
+      --danger: #ff6b9f;
+      --border: rgba(255, 79, 160, 0.18);
+      --shadow: 0 20px 50px rgba(222, 98, 158, 0.18);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 79, 160, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 194, 221, 0.75), transparent 35%),
+        linear-gradient(180deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero, .panel {
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0));
+      border-radius: 50%;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: start;
+    }
+
+    .bubble {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.55));
+      border: 1px solid rgba(255, 79, 160, 0.22);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+
+    .panel { padding: 20px; }
+
+    .section {
+      background: rgba(255, 255, 255, 0.48);
+      border: 1px solid rgba(255, 79, 160, 0.12);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { margin: 0 0 12px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 79, 160, 0.2);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(255, 79, 160, 0.55);
+      box-shadow: 0 0 0 4px rgba(255, 79, 160, 0.12);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .mode-card {
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255, 79, 160, 0.14);
+      border-radius: 18px;
+      padding: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .mode-card.active {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255, 194, 221, 0.65));
+      border-color: rgba(255, 79, 160, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(255, 79, 160, 0.15);
+    }
+
+    .mode-card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .btn-row, .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 0.96rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .primary { background: linear-gradient(135deg, var(--accent), #ff6fb1); color: white; }
+    .secondary { background: rgba(255,255,255,0.8); color: var(--text); border: 1px solid rgba(255, 79, 160, 0.16); }
+    .soft { background: linear-gradient(135deg, #ffc2dd, #ff9ec9); color: #6d1246; }
+
+    .tiny, .note {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.88rem;
+    }
+
+    .rules {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      display: grid;
+      gap: 6px;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      background: var(--panel-strong);
+      border: 1px solid rgba(255, 79, 160, 0.14);
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .pill strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .guess-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .message {
+      min-height: 28px;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .message.error { color: #b4235d; }
+    .message.success { color: #a21853; }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255, 79, 160, 0.14);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 79, 160, 0.08);
+      font-size: 0.93rem;
+    }
+
+    th {
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,0.9);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .empty {
+      text-align: center;
+      padding: 26px 14px;
+      color: var(--muted);
+      border: 1px dashed rgba(255, 79, 160, 0.2);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.45);
+    }
+
+    .turn-box {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255, 194, 221, 0.78));
+      border: 1px solid rgba(255, 79, 160, 0.18);
+      border-radius: 18px;
+      padding: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .online-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px dashed rgba(255, 79, 160, 0.28);
+      border-radius: 18px;
+      padding: 14px;
+      color: var(--muted);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1080px) {
+      .layout, .board { grid-template-columns: 1fr; }
+      .status { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .mode-grid, .two-col, .history-grid, .status, .guess-row { grid-template-columns: 1fr; }
+      .guess-row button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>Cows & Bulls</h1>
+          <p class="subtitle">Guess the hidden number and use the hints after each try to crack the code.</p>
+        </div>
+        <div class="bubble">💖</div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="panel">
+        <h2>Setup</h2>
+
+        <div class="section">
+          <label>Choose mode</label>
+          <div class="mode-grid">
+            <div class="mode-card active" id="soloCard">
+              <h4>Vs Computer</h4>
+              <p>You guess the computer's secret number.</p>
+            </div>
+            <div class="mode-card" id="duelCard">
+              <h4>2 Player Duel</h4>
+              <p>Both players enter a secret number and take turns guessing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section two-col">
+          <div>
+            <label for="digitLength">Number length</label>
+            <select id="digitLength">
+              <option value="4">4 digits</option>
+              <option value="5" selected>5 digits</option>
+              <option value="6">6 digits</option>
+            </select>
+          </div>
+          <div>
+            <label for="playerOneName">Player 1 name</label>
+            <input id="playerOneName" type="text" maxlength="18" value="Player 1" />
+          </div>
+        </div>
+
+        <div class="section hidden" id="playerTwoWrap">
+          <div class="two-col">
+            <div>
+              <label for="playerTwoName">Player 2 name</label>
+              <input id="playerTwoName" type="text" maxlength="18" value="Player 2" />
+            </div>
+            <div>
+              <label for="currentSetter">Secret entry stage</label>
+              <input id="currentSetter" type="text" value="Both players set secrets" disabled />
+            </div>
+          </div>
+        </div>
+
+        <div class="section hidden" id="secretSetupWrap">
+          <label for="p1Secret">Player 1 secret number</label>
+          <input id="p1Secret" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Enter Player 1 secret" />
+          <div style="height:10px"></div>
+          <label for="p2Secret">Player 2 secret number</label>
+          <input id="p2Secret" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Enter Player 2 secret" />
+          <p class="tiny" style="margin:10px 0 0;">Both secrets stay hidden. Then the game begins with alternating turns.</p>
+        </div>
+
+        <div class="btn-row" style="margin-bottom: 14px;">
+          <button class="primary" id="startBtn">Start New Game</button>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="section">
+          <h3>Rules</h3>
+          <ol class="rules">
+            <li>The number can never start with 0.</li>
+            <li>You cannot repeat digits.</li>
+            <li><strong>Cows</strong> = number of digits correct overall.</li>
+            <li><strong>Bulls</strong> = number of digits in the correct place.</li>
+            <li>Example: secret <strong>51380</strong>, guess <strong>15376</strong> → <strong>3 cows</strong> and <strong>1 bull</strong>.</li>
+          </ol>
+        </div>
+
+        <div class="online-card">
+          <strong style="color: var(--text);">About online play</strong>
+          <p class="note" style="margin:8px 0 0;">This version now supports simultaneous 2-player turn-taking on one shared device. For true remote online play with room codes, both players on separate devices would need a backend or realtime database like Firebase or Supabase.</p>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <div class="status">
+          <div class="pill">Mode<strong id="modeStatus">Vs Computer</strong></div>
+          <div class="pill">Game<strong id="gameSummaryStatus">2 Player Duel • 5 digits</strong></div>
+          <div class="pill">Turn<strong id="turnStatus">Not started</strong></div>
+          <div class="pill">Live Summary<strong id="topLiveSummary">Waiting to start</strong></div>
+        </div>
+
+        <div class="board">
+          <div>
+            <div class="section">
+              <h3>Play</h3>
+              <div class="turn-box" id="turnBox">Start a game to begin.</div>
+              <div style="height:14px"></div>
+              <div class="guess-row">
+                <div>
+                  <label for="guessInput">Enter guess</label>
+                  <input id="guessInput" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Type a guess" disabled />
+                </div>
+                <button class="soft" id="submitGuessBtn" disabled>Submit Guess</button>
+              </div>
+              <div class="action-row" style="margin-top: 12px;">
+                <button class="secondary" id="revealBtn" disabled>Reveal Secrets</button>
+              </div>
+              <p class="message" id="message">Choose a mode and start a new game.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-grid">
+          <div>
+            <h3 id="history1Title">Your guesses</h3>
+            <div id="history1"></div>
+          </div>
+          <div>
+            <h3 id="history2Title" class="hidden">Opponent guesses</h3>
+            <div id="history2" class="hidden"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const game = {
+      mode: 'solo',
+      digits: 5,
+      started: false,
+      ended: false,
+      currentTurn: 1,
+      winner: null,
+      soloSecret: '',
+      players: {
+        1: { name: 'Player 1', secret: '', guesses: [] },
+        2: { name: 'Player 2', secret: '', guesses: [] }
+      }
+    };
+
+    const els = {
+      soloCard: document.getElementById('soloCard'),
+      duelCard: document.getElementById('duelCard'),
+      digitLength: document.getElementById('digitLength'),
+      playerOneName: document.getElementById('playerOneName'),
+      playerTwoName: document.getElementById('playerTwoName'),
+      playerTwoWrap: document.getElementById('playerTwoWrap'),
+      secretSetupWrap: document.getElementById('secretSetupWrap'),
+      p1Secret: document.getElementById('p1Secret'),
+      p2Secret: document.getElementById('p2Secret'),
+      startBtn: document.getElementById('startBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      guessInput: document.getElementById('guessInput'),
+      submitGuessBtn: document.getElementById('submitGuessBtn'),
+      revealBtn: document.getElementById('revealBtn'),
+      currentSetter: document.getElementById('currentSetter'),
+      modeStatus: document.getElementById('modeStatus'),
+      gameSummaryStatus: document.getElementById('gameSummaryStatus'),
+      topLiveSummary: document.getElementById('topLiveSummary'),
+      turnStatus: document.getElementById('turnStatus'),
+      turnBox: document.getElementById('turnBox'),
+      message: document.getElementById('message'),
+      history1Title: document.getElementById('history1Title'),
+      history2Title: document.getElementById('history2Title'),
+      history1: document.getElementById('history1'),
+      history2: document.getElementById('history2')
+    };
+
+    function onlyDigits(value, maxLen = 6) {
+      return value.replace(/\D/g, '').slice(0, maxLen);
+    }
+
+    function hasUniqueDigits(str) {
+      return new Set(str).size === str.length;
+    }
+
+    function validSecret(str, digits) {
+      if (!/^\d+$/.test(str)) return false;
+      if (str.length !== Number(digits)) return false;
+      if (str.startsWith('0')) return false;
+      if (!hasUniqueDigits(str)) return false;
+      return true;
+    }
+
+    function genSecret(digits) {
+      const pool = ['0','1','2','3','4','5','6','7','8','9'];
+      let out = '';
+      const firstPool = pool.filter(d => d !== '0');
+      const first = firstPool[Math.floor(Math.random() * firstPool.length)];
+      out += first;
+      pool.splice(pool.indexOf(first), 1);
+      while (out.length < digits) {
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        out += pick;
+        pool.splice(pool.indexOf(pick), 1);
+      }
+      return out;
+    }
+
+    function score(secret, guess) {
+      let cows = 0;
+      let bulls = 0;
+      for (let i = 0; i < guess.length; i++) {
+        if (secret.includes(guess[i])) cows++;
+        if (secret[i] === guess[i]) bulls++;
+      }
+      return { cows, bulls };
+    }
+
+    function setMode(mode) {
+      game.mode = mode;
+      els.soloCard.classList.toggle('active', mode === 'solo');
+      els.duelCard.classList.toggle('active', mode === 'duel');
+      els.playerTwoWrap.classList.toggle('hidden', mode !== 'duel');
+      els.secretSetupWrap.classList.toggle('hidden', mode !== 'duel');
+      els.history2Title.classList.toggle('hidden', mode !== 'duel');
+      els.history2.classList.toggle('hidden', mode !== 'duel');
+      els.modeStatus.textContent = mode === 'solo' ? 'Vs Computer' : '2 Player Duel';
+      resetGame(false);
+      setMessage(mode === 'solo' ? 'Solo mode selected.' : '2 Player Duel selected. Both players need secret numbers.');
+      renderAll();
+    }
+
+    function setMessage(text, type = '') {
+      els.message.textContent = text;
+      els.message.className = 'message';
+      if (type) els.message.classList.add(type);
+    }
+
+    function updateNames() {
+      game.players[1].name = (els.playerOneName.value || 'Player 1').trim() || 'Player 1';
+      game.players[2].name = (els.playerTwoName.value || 'Player 2').trim() || 'Player 2';
+    }
+
+    function resetGame(showMessage = true) {
+      game.digits = Number(els.digitLength.value);
+      game.started = false;
+      game.ended = false;
+      game.currentTurn = 1;
+      game.winner = null;
+      game.soloSecret = '';
+      game.players[1].secret = '';
+      game.players[2].secret = '';
+      game.players[1].guesses = [];
+      game.players[2].guesses = [];
+      els.guessInput.value = '';
+      els.guessInput.disabled = true;
+      els.submitGuessBtn.disabled = true;
+      els.revealBtn.disabled = true;
+      if (showMessage) setMessage('Board reset. Start a new game when ready.');
+      renderAll();
+    }
+
+    function startGame() {
+      updateNames();
+      game.digits = Number(els.digitLength.value);
+      game.players[1].guesses = [];
+      game.players[2].guesses = [];
+      game.currentTurn = 1;
+      game.winner = null;
+      game.ended = false;
+
+      if (game.mode === 'solo') {
+        game.soloSecret = genSecret(game.digits);
+        game.started = true;
+        els.guessInput.disabled = false;
+        els.submitGuessBtn.disabled = false;
+        els.revealBtn.disabled = false;
+        setMessage(`New ${game.digits}-digit solo game started. Make your first guess.`);
+        renderAll();
+        els.guessInput.focus();
+        return;
+      }
+
+      const p1 = onlyDigits(els.p1Secret.value, 6);
+      const p2 = onlyDigits(els.p2Secret.value, 6);
+      els.p1Secret.value = p1;
+      els.p2Secret.value = p2;
+
+      if (!validSecret(p1, game.digits) || !validSecret(p2, game.digits)) {
+        setMessage(`Both players need valid ${game.digits}-digit secret numbers with no repeated digits and no leading 0.`, 'error');
+        return;
+      }
+
+      if (p1 === p2) {
+        setMessage('For a better duel, use two different secret numbers.', 'error');
+        return;
+      }
+
+      game.players[1].secret = p1;
+      game.players[2].secret = p2;
+      els.p1Secret.value = '';
+      els.p2Secret.value = '';
+      game.started = true;
+      els.guessInput.disabled = false;
+      els.submitGuessBtn.disabled = false;
+      els.revealBtn.disabled = false;
+      setMessage(`${game.players[1].name} goes first. Guess ${game.players[2].name}'s secret number.`, 'success');
+      renderAll();
+      els.guessInput.focus();
+    }
+
+    function submitGuess() {
+      if (!game.started || game.ended) return;
+      const guess = onlyDigits(els.guessInput.value, 6);
+      els.guessInput.value = guess;
+
+      if (!validSecret(guess, game.digits)) {
+        setMessage(`Enter a valid ${game.digits}-digit guess with no repeated digits and no leading 0.`, 'error');
+        return;
+      }
+
+      if (game.mode === 'solo') {
+        if (game.players[1].guesses.some(g => g.guess === guess)) {
+          setMessage('You already tried that guess.', 'error');
+          return;
+        }
+        const result = score(game.soloSecret, guess);
+        game.players[1].guesses.unshift({ guess, ...result });
+        if (result.bulls === game.digits) {
+          game.ended = true;
+          els.guessInput.disabled = true;
+          els.submitGuessBtn.disabled = true;
+          setMessage(`You got it. ${guess} is correct.`, 'success');
+        } else {
+          setMessage(`${guess} → ${result.cows} cows, ${result.bulls} bulls.`);
+        }
+        els.guessInput.value = '';
+        renderAll();
+        return;
+      }
+
+      const current = game.currentTurn;
+      const opponent = current === 1 ? 2 : 1;
+      const currentPlayer = game.players[current];
+      const opponentPlayer = game.players[opponent];
+
+      if (currentPlayer.guesses.some(g => g.guess === guess)) {
+        setMessage(`${currentPlayer.name} already tried that guess.`, 'error');
+        return;
+      }
+
+      const result = score(opponentPlayer.secret, guess);
+      currentPlayer.guesses.unshift({ guess, ...result });
+
+      if (result.bulls === game.digits) {
+        game.ended = true;
+        game.winner = current;
+        els.guessInput.disabled = true;
+        els.submitGuessBtn.disabled = true;
+        setMessage(`${currentPlayer.name} wins. ${guess} cracked the secret.`, 'success');
+      } else {
+        game.currentTurn = opponent;
+        setMessage(`${currentPlayer.name} guessed ${guess} → ${result.cows} cows, ${result.bulls} bulls. Now it's ${opponentPlayer.name}'s turn.`, 'success');
+      }
+
+      els.guessInput.value = '';
+      renderAll();
+      if (!game.ended) els.guessInput.focus();
+    }
+
+    function revealSecrets() {
+      if (!game.started) {
+        setMessage('Start a game first.', 'error');
+        return;
+      }
+      game.ended = true;
+      els.guessInput.disabled = true;
+      els.submitGuessBtn.disabled = true;
+      if (game.mode === 'solo') {
+        setMessage(`Game over. The secret was ${game.soloSecret}.`, 'error');
+      } else {
+        setMessage(`${game.players[1].name}'s secret: ${game.players[1].secret}. ${game.players[2].name}'s secret: ${game.players[2].secret}.`, 'error');
+      }
+      renderAll();
+    }
+
+    function historyMarkup(list) {
+      if (!list.length) return '<div class="empty">No guesses yet.</div>';
+      const rows = list.map((item, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${item.guess}</strong></td>
+          <td>${item.cows}</td>
+          <td>${item.bulls}</td>
+        </tr>
+      `).join('');
+      return `
+        <table>
+          <thead>
+            <tr><th>#</th><th>Guess</th><th>Cows</th><th>Bulls</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderAll() {
+  updateNames();
+  els.gameSummaryStatus.textContent = `${game.mode === 'solo' ? 'Vs Computer' : '2 Player Duel'} • ${game.digits} digits`;
+  els.currentSetter.value = game.mode === 'duel' ? 'Both players set secrets' : 'Not needed';
+
+  if (!game.started) {
+    els.turnStatus.textContent = 'Not started';
+    els.topLiveSummary.textContent = 'Waiting to start';
+    els.turnBox.textContent = game.mode === 'solo'
+      ? 'Press Start New Game and begin guessing.'
+      : 'Both players should enter secret numbers, then press Start New Game.';
+  } else if (game.ended) {
+    els.turnStatus.textContent = game.winner ? game.players[game.winner].name : 'Finished';
+    els.topLiveSummary.textContent = game.mode === 'solo'
+      ? `Total guesses: ${game.players[1].guesses.length}`
+      : `${game.players[1].name}: ${game.players[1].guesses.length} • ${game.players[2].name}: ${game.players[2].guesses.length}`;
+
+    els.turnBox.textContent = game.mode === 'solo'
+      ? 'Game finished.'
+      : game.winner
+        ? `${game.players[game.winner].name} won the duel.`
+        : 'Game finished.';
+  } else {
+    els.turnStatus.textContent = game.mode === 'solo' ? 'You' : game.players[game.currentTurn].name;
+    els.topLiveSummary.textContent = game.mode === 'solo'
+      ? `Guesses: ${game.players[1].guesses.length}`
+      : `${game.players[1].name}: ${game.players[1].guesses.length} • ${game.players[2].name}: ${game.players[2].guesses.length}`;
+
+    if (game.mode === 'solo') {
+      els.turnBox.textContent = 'Your turn. Guess the computer\'s secret number.';
+    } else {
+      const current = game.players[game.currentTurn];
+      const target = game.players[game.currentTurn === 1 ? 2 : 1];
+      els.turnBox.textContent = `${current.name}, it's your turn. Guess ${target.name}'s ${game.digits}-digit number.`;
+    }
+  }
+
+  if (game.mode === 'solo') {
+    els.history1Title.textContent = 'Your guesses';
+    els.history1.innerHTML = historyMarkup(game.players[1].guesses);
+    els.history2Title.classList.add('hidden');
+    els.history2.classList.add('hidden');
+  } else {
+    els.history1Title.textContent = `${game.players[1].name}'s guesses`;
+    els.history2Title.textContent = `${game.players[2].name}'s guesses`;
+    els.history1.innerHTML = historyMarkup(game.players[1].guesses);
+    els.history2.innerHTML = historyMarkup(game.players[2].guesses);
+    els.history2Title.classList.remove('hidden');
+    els.history2.classList.remove('hidden');
+  }
+}
+
+    els.soloCard.addEventListener('click', () => setMode('solo'));
+    els.duelCard.addEventListener('click', () => setMode('duel'));
+    els.startBtn.addEventListener('click', startGame);
+    els.resetBtn.addEventListener('click', () => resetGame(true));
+    els.submitGuessBtn.addEventListener('click', submitGuess);
+    els.revealBtn.addEventListener('click', revealSecrets);
+    els.digitLength.addEventListener('change', () => {
+      game.digits = Number(els.digitLength.value);
+      resetGame(false);
+      setMessage(`Digit length changed to ${game.digits}.`);
+    });
+
+    [els.p1Secret, els.p2Secret, els.guessInput].forEach((input) => {
+      input.addEventListener('input', (e) => {
+        e.target.value = onlyDigits(e.target.value, 6);
+      });
+    });
+
+    [els.playerOneName, els.playerTwoName].forEach((input) => {
+      input.addEventListener('input', renderAll);
+    });
+
+    els.guessInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitGuess();
+    });
+
+    [els.p1Secret, els.p2Secret].forEach((input) => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startGame();
+      });
+    });
+
+    setMode('solo');
+  </script>
+</body>
+</html>
